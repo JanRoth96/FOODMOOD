@@ -16,11 +16,16 @@ class UserRecipesController < ApplicationController
   end
 
   def update
+    raise
     @user_recipe = UserRecipe.find(params[:id])
     authorize @user_recipe
     if @user_recipe.update(cart_params)
-      # redirect_to cart_path
-      head :ok
+      @cart_recipes = UserRecipe.where(saved: false, user: current_user)
+      if @cart_recipes.count != 0
+        redirect_to cart_path, status: :see_other
+      else
+        redirect_to cookbook_path, status: :see_other
+      end
     else
       render :edit
     end
